@@ -19,4 +19,3 @@ class MnistModel:
     def create_traning_variable(self):
         raise  NotImplementedError
 
-    
