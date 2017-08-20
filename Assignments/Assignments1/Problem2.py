@@ -1,4 +1,5 @@
-# Task 1: Improve the Accuracy of MNIST and Task 2
+# Task 1: Improve the Accuracy of MNIST
+#  Task 2
 
 
 # Add a hidden layer
@@ -116,12 +117,18 @@ def heart_disease_predict():
             X[i].append(float(row[j]))
         i += 1
 
+
+
+    # Add feature
+    # X = np.concatenate((X, np.multiply(X, X)), axis=1)
     train_size = 300
     feature_size = len(X[0])
     batch_size = 10
-    hidden_layer = 5
+    hidden_layer = 20
 
-    epoch = 200
+    epoch = 300
+
+    weight = (len(Y) - np.sum(Y)) / np.sum(Y)
 
     X_train = X[0:train_size]
     Y_train = Y[0:train_size]
@@ -129,31 +136,40 @@ def heart_disease_predict():
     X_test = X[train_size:len(X)]
     Y_test = Y[train_size:len(Y)]
 
-    training_rate = 0.0002
+    training_rate = 0.05
     """
     Build Model
     """
     # step 2: Build placeholder
-    X = tf.placeholder(dtype=tf.float32, name="X")
-    Y = tf.placeholder(dtype=tf.float32, name="Y")
+    X = tf.placeholder(dtype=tf.float32, shape=(None, feature_size), name="X")
+    Y = tf.placeholder(dtype=tf.float32, shape=(None, 1), name="Y")
+
+
 
     # step 3:Build variable
-    w1 = tf.Variable(tf.zeros(shape=[feature_size, hidden_layer]), trainable=True, name="weight")
+    w1 = tf.Variable(tf.random_normal(shape=[feature_size, hidden_layer]), trainable=True, name="weight")
     b1 = tf.Variable(tf.zeros(shape=[1, hidden_layer]), trainable=True, name="bias")
 
-    w2 = tf.Variable(tf.zeros(shape=[hidden_layer, 1]), trainable=True, name="weight")
+    w2 = tf.Variable(tf.random_normal(shape=[hidden_layer, 1]), trainable=True, name="weight")
     b2 = tf.Variable(tf.zeros(shape=[1, 1]), trainable=True, name="bias")
 
     # step 4:Build predict function
     sig = tf.matmul(X, w1) + b1
     hidden = tf.sigmoid(sig)
     sig2 = tf.matmul(hidden, w2) + b2
-    Y_predict=tf.sigmoid(sig2)
+    y_predict = tf.sigmoid(sig2)
 
-    loss = tf.reduce_mean((1-Y)*tf.abs(tf.log(1-Y_predict))+tf.abs(Y*tf.log(Y_predict)))
+    loss = tf.reduce_mean(-(1 - Y) * tf.log(1 - y_predict) - Y * tf.log(y_predict))
 
     # step 5: Build optimizer
     optimizer = tf.train.GradientDescentOptimizer(training_rate).minimize(loss)
+
+    # Build Shuffle procedure and normalize
+    train_data = np.concatenate((X_train, Y_train), axis=1)
+
+    random_shuffle = tf.random_shuffle(train_data)
+
+
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -161,22 +177,32 @@ def heart_disease_predict():
 
         n_batches = train_size / batch_size
         for i in range(epoch):
+            train_data = sess.run(random_shuffle)
+            X_train = train_data[:, 0:9]
+            Y_train = train_data[:, 9]
+            Y_train = [[i] for i in Y_train]
             total_loss = 0
+            total_hidden = 0
 
             for j in range(int(n_batches)):
                 start_num = j * batch_size
-                _, loss_ = sess.run([optimizer, loss], feed_dict={X: X_train[start_num:start_num + batch_size],
-                                                                  Y: Y_train[start_num:start_num + batch_size]})
+                _, loss_, hidden_ = sess.run([optimizer, loss, hidden],
+                                             feed_dict={X: X_train[start_num:start_num + batch_size],
+                                                        Y: Y_train[start_num:start_num + batch_size]})
                 total_loss += loss_
+                total_hidden += hidden_
 
+            print("Epoch{0}:{1}".format(i, total_loss / n_batches))
+        writer.close()
 
-            print("Epoch{0}:{1}".format(i, total_loss/n_batches))
-            writer.close()
-
-        Y_test_predict = sess.run(Y_predict, feed_dict={X: X_test})
-        correct=np.abs(np.around(Y_test_predict)-Y_test)
-        accuracy=(len(Y_test)-np.sum(correct))/len(Y_test)
+        Y_test_predict = sess.run(y_predict, feed_dict={X: X_train})
+        print(Y_test_predict, 0)
+        print(np.around(Y_test_predict, 0))
+        correct = np.abs(np.around(Y_test_predict) - Y_train)
+        accuracy = (len(Y_train) - np.sum(correct)) / len(Y_train)
         print(accuracy)
+
+
 
 
 
