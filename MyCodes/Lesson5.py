@@ -31,7 +31,7 @@ class MNISTModel(TFModel):
         return self.out_layer_logitst
 
     def add_loss_op(self, pred):
-        cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=pre, logits=self.out_layer_logitst)
+        cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=pred, logits=self.out_layer_logitst)
         self.loss_op = tf.reduce_mean(cross_entropy)
         return self.loss_op
 
@@ -46,13 +46,33 @@ class MNISTModel(TFModel):
         self.optimizer = tf.train.GradientDescentOptimizer(self.config.training_rate).minimize(loss_op)
 
     def run_epoch(self, sess, input_data, input_labels):
-        feed_dict = self.create_feed_dict(input_data, input_labels)
-        sess = tf.Session()
-        sess.run([])
+        n_batch = int(self.all_data.train.num_examples / self.config.batch_size)
+        total_loss = 0
+        for _ in range(n_batch):
+            x_batch, y_batch = self.all_data.train.next_batch(self.config.batch_size)
+            feed_dict = self.create_feed_dict(x_batch, y_batch)
 
-    def __init__(self, Config):
-        self.config = Config
+            _, loss = sess.run([self.optimizer, self.loss_op], feed_dict=feed_dict)
+            total_loss += loss
+        average_loss = total_loss / n_batch
+        return average_loss
+
+
+def fit(self, sess, input_data, input_labels):
+    sess.run(tf.global_variables_initializer())
+    self.writer = tf.summary.FileWriter('./graphs/mnst', graph=sess.graph)
+    loss_array = []
+    for epoch in range(self.config.epochs):
+        epoch_loss = self.run_epoch(input_data, input_labels)
+        loss_array.append([epoch, epoch_loss])
+    return loss_array
+
+
+def __init__(self, Config):
+    self.config = Config
 
 
 class Config(object):
     training_rate = 0.1
+    epochs = 30
+    batch_size = 128
