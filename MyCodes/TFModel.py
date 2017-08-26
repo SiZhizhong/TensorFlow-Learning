@@ -133,13 +133,3 @@ class TFModel(object):
         raise NotImplementedError("Each Model must re-implement this method.")
 
 
-class LanguageModel(Model):
-    """Abstracts a Tensorflow graph for learning language models.
-
-    Adds ability to do embedding.
-    """
-
-    def add_embedding(self):
-        """Add embedding layer. that maps from vocabulary to vectors.
-        """
-        raise NotImplementedError("Each Model must re-implement this method.")
