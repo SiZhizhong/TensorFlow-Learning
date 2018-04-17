@@ -1,6 +1,9 @@
 import  tensorflow as  tf
 import  numpy as  np
 import csv
+import os
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"]="2"
 
 
 
@@ -33,7 +36,7 @@ class LinearModel:
         self.add_placeholder()
         self.add_variable()
         self.cofigure_model()
-        self.optimizer=tf.train.AdadeltaOptimizer(0.001).minimize(self.loss)
+        self.optimizer=tf.train.AdadeltaOptimizer(0.0001).minimize(self.loss)
         self.saver=tf.train.Saver(max_to_keep=5)
         for i in range(1000):
             with tf.Session() as sess:
