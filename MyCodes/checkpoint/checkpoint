@@ -1,6 +1,2 @@
-model_checkpoint_path: "MNIST-12870"
-all_model_checkpoint_paths: "MNIST-11154"
-all_model_checkpoint_paths: "MNIST-11583"
-all_model_checkpoint_paths: "MNIST-12012"
-all_model_checkpoint_paths: "MNIST-12441"
-all_model_checkpoint_paths: "MNIST-12870"
+model_checkpoint_path: "LinearModel"
+all_model_checkpoint_paths: "LinearModel"
