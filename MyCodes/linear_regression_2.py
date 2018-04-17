@@ -33,7 +33,10 @@ class LinearModel:
                                     initializer=tf.zeros_initializer)
         self.output_sigmoid=tf.matmul(self.W1,self.activation)+self.bias1
         self.prediction=tf.nn.sigmoid(self.output_sigmoid)
-        self.loss=tf.reduce_mean(tf.square(self.prediction-self.Y))
+
+
+        cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=self.Y, logits=self.output_sigmoid)
+        self.loss = tf.reduce_mean(cross_entropy)
 
 
 
