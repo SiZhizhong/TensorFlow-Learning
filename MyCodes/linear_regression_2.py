@@ -2,12 +2,10 @@ import  tensorflow as  tf
 import  numpy as  np
 import csv
 import os
-<<<<<<< HEAD
+
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"]="2"
-=======
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
->>>>>>> b0c4c56f0ffc5bdcc9b268e25c36a96901cb4748
+
 
 
 
@@ -40,20 +38,14 @@ class LinearModel:
         self.prediction=tf.nn.sigmoid(self.output_sigmoid)
 
 
-        cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=self.Y, logits=self.output_sigmoid)
+        cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.Y, logits=self.output_sigmoid)
         self.loss = tf.reduce_mean(cross_entropy)
 
 
 
     def train(self,print_eopoch=False):
-<<<<<<< HEAD
-        self.add_placeholder()
-        self.add_variable()
-        self.cofigure_model()
-=======
 
->>>>>>> b0c4c56f0ffc5bdcc9b268e25c36a96901cb4748
-        self.optimizer=tf.train.AdadeltaOptimizer(0.0001).minimize(self.loss)
+        self.optimizer=tf.train.GradientDescentOptimizer(0.001).minimize(self.loss)
         self.saver=tf.train.Saver(max_to_keep=5)
         for i in range(1001):
             with tf.Session() as sess:
