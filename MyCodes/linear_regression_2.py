@@ -2,7 +2,10 @@ import  tensorflow as  tf
 import  numpy as  np
 import csv
 import os
+<<<<<<< HEAD
 
+=======
+>>>>>>> ce0a4b8b6415966a2b147e1ca7d09f4d0099fb59
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"]="2"
 
@@ -45,7 +48,12 @@ class LinearModel:
 
     def train(self,print_eopoch=False):
 
+<<<<<<< HEAD
         self.optimizer=tf.train.GradientDescentOptimizer(0.001).minimize(self.loss)
+=======
+
+        self.optimizer=tf.train.AdadeltaOptimizer(0.0001).minimize(self.loss)
+>>>>>>> ce0a4b8b6415966a2b147e1ca7d09f4d0099fb59
         self.saver=tf.train.Saver(max_to_keep=5)
         for i in range(1001):
             with tf.Session() as sess:
